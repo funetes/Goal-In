@@ -8,7 +8,7 @@ express, mysql, sequilze, jwt, aws(rds,s3,ec2)
 
 ## Data relation
 
-![alt text](/img/goalInDataRelation.jpg)
+![alt text](/img/goalInDataRelation.png)
 
 ---
 
