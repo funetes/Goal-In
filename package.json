@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha app.spec.js --exit",
-    "start": "node app.js"
+    "test": "NODE_ENV=test mocha api/user/user.spec.js --exit",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
