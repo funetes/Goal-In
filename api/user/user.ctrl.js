@@ -1,70 +1,93 @@
-let users = [
-  {
-    id: 1,
-    userName: 'kim',
-    email: 'kimlove2324@gmail.com',
-  },
-  {
-    id: 2,
-    userName: 'park',
-    email: 'park2324@gmail.com',
-  },
-];
+const { User } = require('../../models');
 
-const index = (req, res) => {
+const index = async (req, res) => {
   req.query.limit = req.query.limit || 10;
   const limit = parseInt(req.query.limit);
   if (isNaN(limit)) {
     return res.status(400).end();
   }
-  res.json(users.slice(0, limit));
+  const users = await User.findAll({
+    limit,
+  });
+  res.json(users);
 };
 
-const show = (req, res) => {
+const show = async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     return res.status(400).end();
   }
-  const user = users.filter(user => user.id === id)[0];
+  const user = await User.findOne({
+    where: {
+      id,
+    },
+  });
   if (!user) {
     return res.status(404).end();
   }
   return res.json(user);
 };
 
-const destroy = (req, res) => {
+const destroy = async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) return res.status(400).end();
-  users = users.filter(user => user.id !== id);
-  res.status(204).end();
+  try {
+    await User.destroy({ where: { id } });
+    res.status(204).end();
+  } catch (error) {
+    return res.status(500).end();
+  }
 };
 
-const create = (req, res) => {
-  const { userName, email } = req.body;
-  const isConflict = users.filter(
-    user => user.email === email || user.userName === userName
-  ).length;
+const create = async (req, res) => {
+  const { userName, email, passWord } = req.body;
   if (!userName || !email) return res.status(400).end();
-  if (isConflict) return res.status(409).end();
-  const id = Date.now();
-  const user = { id, userName, email };
-  users.push(user);
-  res.status(201).json(user);
+  try {
+    const [user, created] = await User.findOrCreate({
+      where: {
+        userName,
+        email,
+      },
+      defaults: {
+        passWord,
+        avatar: null,
+        motto: null,
+        credit: 0,
+      },
+    });
+    if (!created) {
+      return res.status(500).end();
+    }
+    res
+      .status(201)
+      .json({ id: user.id, userName: user.userName, email: user.email });
+  } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).end();
+    }
+  }
 };
 
-const update = (req, res) => {
+const update = async (req, res) => {
   const id = parseInt(req.params.id);
   const { userName } = req.body;
   if (isNaN(id) || !userName) return res.status(400).end();
 
-  const user = users.filter(user => user.id === id)[0];
-  if (!user) return res.status(404).end();
-
-  const duplicateUserName = users.filter(user => user.userName === userName)[0];
-  if (duplicateUserName) return res.status(409).end();
-
-  user.userName = userName;
-  res.json(user);
+  try {
+    const user = await User.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!user) return res.status(404).end();
+    user.userName = userName;
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).end();
+    }
+  }
 };
 
 module.exports = {

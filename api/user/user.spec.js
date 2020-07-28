@@ -1,9 +1,12 @@
 const app = require('../../app');
 const request = require('supertest');
 const should = require('should');
-
+const db = require('../../models');
+const { users } = require('../dummy');
 describe('GET /users', () => {
   describe('성공시', () => {
+    before(() => db.sequelize.sync({ force: true }));
+    before(() => db.User.bulkCreate(users));
     it('유저 배열을 리턴한다.', done => {
       request(app)
         .get('/users')
@@ -26,6 +29,8 @@ describe('GET /users', () => {
           done();
         });
     });
+  });
+  describe('실패시', () => {
     it('limit이 숫자형이 아니면 400을 반환한다.', done => {
       request(app).get('/users?limit=one').expect(400).end(done);
     });
@@ -33,6 +38,8 @@ describe('GET /users', () => {
 });
 
 describe('GET /users/1', () => {
+  before(() => db.sequelize.sync({ force: true }));
+  before(() => db.User.bulkCreate(users));
   describe('성공시', () => {
     it('id가 1인 user객체를 반환한다.', done => {
       request(app)
@@ -54,6 +61,8 @@ describe('GET /users/1', () => {
 });
 
 describe('DELETE /users/1', () => {
+  before(() => db.sequelize.sync({ force: true }));
+  before(() => db.User.bulkCreate(users));
   describe('성공시', () => {
     it('204를 응답한다.', done => {
       request(app).delete('/users/1').expect(204).end(done);
@@ -67,13 +76,18 @@ describe('DELETE /users/1', () => {
 });
 
 describe('POST /users', () => {
+  before(() => db.sequelize.sync({ force: true }));
+  before(() => db.User.bulkCreate(users));
   describe('성공시', () => {
-    // 중복되는 코드는 before hook으로 뺀다.
     let response;
     before(done => {
       request(app)
         .post('/users')
-        .send({ userName: 'lee', email: 'leelove2324@gmail.com' })
+        .send({
+          userName: 'lee',
+          email: 'leelove2324@gmail.com',
+          passWord: 'oop123456',
+        })
         .expect(201)
         .end((err, res) => {
           response = res.body;
@@ -98,7 +112,11 @@ describe('POST /users', () => {
     it('userName,email이 중복되면 409를 응답한다.', done => {
       request(app)
         .post('/users')
-        .send({ userName: 'kim', email: 'park2324@gmail.com' })
+        .send({
+          userName: 'kim',
+          email: 'park2324@gmail.com',
+          passWord: 'oop123456',
+        })
         .expect(409)
         .end(done);
     });
@@ -106,6 +124,8 @@ describe('POST /users', () => {
 });
 
 describe('PUT /users/:id', () => {
+  before(() => db.sequelize.sync({ force: true }));
+  before(() => db.User.bulkCreate(users));
   describe('성공시', () => {
     it('변경된 정보를 응답한다.', done => {
       const userName = 'kang';
