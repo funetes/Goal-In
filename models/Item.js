@@ -4,6 +4,10 @@ const Item = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    categori: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     image: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -15,7 +19,7 @@ const Item = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    Description: {
+    description: {
       type: DataTypes.STRING,
       allowNull: false,
     },

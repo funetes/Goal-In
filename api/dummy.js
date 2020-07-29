@@ -11,4 +11,28 @@ const users = [
   },
 ];
 
-module.exports = { users };
+const items = [
+  {
+    itemName: 'backgroundA',
+    categori: 'background',
+    image: 'null',
+    price: 1000,
+    description: 'something beautiful background',
+  },
+  {
+    itemName: 'extends goal list',
+    categori: 'etc.',
+    image: 'null',
+    price: 2000,
+    description: 'extends goal list',
+  },
+  {
+    itemName: 'darkmode',
+    categori: 'etc.',
+    image: 'null',
+    price: 1500,
+    description: 'cool dark mode',
+  },
+];
+
+module.exports = { users, items };

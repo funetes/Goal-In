@@ -70,9 +70,8 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const id = parseInt(req.params.id);
-  const { userName } = req.body;
+  const { userName, motto } = req.body;
   if (isNaN(id) || !userName) return res.status(400).end();
-
   try {
     const user = await User.findOne({
       where: {
@@ -80,7 +79,9 @@ const update = async (req, res) => {
       },
     });
     if (!user) return res.status(404).end();
-    user.userName = userName;
+    userName ? (user.userName = userName) : null;
+    motto ? (user.motto = motto) : null;
+
     await user.save();
     res.json(user);
   } catch (error) {
