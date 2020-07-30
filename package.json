@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha api/item/item.spec.js --exit -w",
+    "test": "NODE_ENV=test mocha api/goal/goal.spec.js --exit -w",
     "start": "node server.js"
   },
   "keywords": [],

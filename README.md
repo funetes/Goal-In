@@ -2,7 +2,7 @@
 
 ## stack
 
-express, mysql, sequilze, jwt, aws(rds,s3,ec2)
+express, mysql, sequilze, jwt, aws(rds,s3,ec2), test(mocha, supertest,shouldJS)
 
 ---
 
