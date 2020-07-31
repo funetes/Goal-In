@@ -1,3 +1,4 @@
+const { checkValidateTerm } = require('../utils/validate');
 const Goal = (sequelize, DataTypes) => {
   return sequelize.define('Goal', {
     title: {
@@ -7,8 +8,8 @@ const Goal = (sequelize, DataTypes) => {
     term: {
       type: DataTypes.STRING,
       allowNull: false,
-      validator: {
-        is: ['^\\d{4}\\.d{2}\\.d{2}\\-d{4}\\.d{2}\\.d{2}$', 'i'],
+      validate: {
+        validateTerm: checkValidateTerm,
       },
     },
     completed: {

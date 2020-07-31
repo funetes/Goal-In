@@ -2,7 +2,7 @@ const express = require('express');
 const ctrl = require('./goal.ctrl');
 const router = express.Router();
 
-// router.post('/', ctrl.index);
+router.get('/', ctrl.index);
 
 // router.get('/:id', ctrl.show);
 

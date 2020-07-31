@@ -1,11 +1,20 @@
-const { Goal } = require('../../models');
+const { Goal, User } = require('../../models');
 const index = async (req, res) => {
-  const userId = req.body.userId;
-  // get goals default index is 10
-  // 최근 10개  기본
+  const userId = parseInt('1', 10); //userId는 유저 인증후 미들웨어에서 올것임
   // offset을 주어서 pagination을 구현해야함.
-
-  const goals = await Goal.findAll({});
+  try {
+    const goals = await Goal.findAll({
+      where: {
+        Userid: userId,
+      },
+      // 최근 10개
+      order: [['createdAt', 'DESC']],
+      limit: 10,
+    });
+    res.json(goals);
+  } catch (error) {
+    return res.status(500).end();
+  }
 };
 const show = () => {
   // show goals with query
@@ -13,11 +22,19 @@ const show = () => {
 const create = async (req, res) => {
   // create goals
   // userId는 유저 인증후 미들웨어에서 올것임
-  const { title, term, completed, isExpire, UserId } = req.body;
-  // 모든 값이 있는지 체크해야 한다. 하지만 boolean값이 있다. how?
+  const userId = parseInt('1', 10); //userId는 유저 인증후 미들웨어에서 올것임
+  const { title, term, completed, isExpire } = req.body;
 
+  if (
+    title === undefined ||
+    term === undefined ||
+    completed === undefined ||
+    isExpire === undefined ||
+    userId === undefined
+  ) {
+    return res.status(400).end();
+  }
   // userId는 유저 인증후 미들웨어에서 올것임
-  const userId = parseInt(UserId, 10);
   try {
     const goal = await Goal.create({
       title,
@@ -27,9 +44,11 @@ const create = async (req, res) => {
       UserId: userId,
     });
     res.json(goal);
-    return goal;
   } catch (error) {
-    console.log(error);
+    if (error.errors[0].message === 'term validate error') {
+      return res.status(400).end('term validate error');
+    }
+    return res.status(500).end();
   }
 };
 
@@ -41,7 +60,7 @@ const destroy = () => {
 };
 
 module.exports = {
-  // index,
+  index,
   // show,
   create,
   // update,
