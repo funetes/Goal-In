@@ -144,13 +144,24 @@ describe('PUT /', () => {
           title: 'changeTitle',
         })
         .end((err, res) => {
-          res.body.should.have.property('id', 5);
-          res.body.should.have.property('title', 'changeTitle');
+          const result = res.body[0];
+          res.body.should.have.be.instanceOf(Array);
+          result.should.equal(1);
           done();
         });
     });
-    // it('유효한 날짜를 변경해야함', ()=> {
-
-    // })
+    it('유효한 날짜를 변경해야함', done => {
+      request(app)
+        .put('/goals/2')
+        .send({
+          term: '2020/08/01-2020/08/02',
+        })
+        .end((err, res) => {
+          const result = res.body[0];
+          res.body.should.have.be.instanceOf(Array);
+          result.should.equal(1);
+          done();
+        });
+    });
   });
 });

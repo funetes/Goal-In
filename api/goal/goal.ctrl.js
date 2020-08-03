@@ -42,7 +42,7 @@ const create = async (req, res) => {
   // userId는 유저 인증후 미들웨어에서 올것임
   const userId = parseInt('1', 10); //userId는 유저 인증후 미들웨어에서 올것임
   const { title, term, completed, isExpire } = req.body;
-
+  // 좀 더 좋은 방법이 없을까?
   if (
     title === undefined ||
     term === undefined ||
@@ -69,29 +69,48 @@ const create = async (req, res) => {
     return res.status(500).end();
   }
 };
-
 const update = async (req, res) => {
   // update goals
   const userId = parseInt('1', 10); //userId는 유저 인증후 미들웨어에서 올것임
   const goalId = parseInt(req.params.id);
   if (isNaN(goalId)) return res.status(400).end();
-  const { title } = req.body;
+
+  const { title, term } = req.body;
+  const set = {};
+  title ? (set.title = title) : null;
+  term ? (set.term = term) : null;
+
   try {
-    const goal = await Goal.findOne({
+    const goal = await Goal.update(set, {
       where: {
         UserId: userId,
         id: goalId,
       },
     });
-    if (title) goal.title = title;
-    await goal.save();
+    if (goal[0] !== 1) {
+      return res.status(400).end();
+    }
     res.json(goal);
   } catch (error) {
-    console.log(error);
+    return res.status(500).end();
   }
 };
-const destroy = () => {
+const destroy = async (req, res) => {
   // delete goals
+  const userId = parseInt('1', 10); //userId는 유저 인증후 미들웨어에서 올것임
+  const goalId = parseInt(req.params.id);
+
+  try {
+    await Goal.destroy({
+      where: {
+        id: goalId,
+        UserId: userId,
+      },
+    });
+    res.status(204).end();
+  } catch (error) {
+    return res.status(500).end();
+  }
 };
 
 module.exports = {
@@ -99,5 +118,5 @@ module.exports = {
   show,
   create,
   update,
-  // destroy,
+  destroy,
 };
