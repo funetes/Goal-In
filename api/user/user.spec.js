@@ -54,7 +54,7 @@ describe('GET /users/1', () => {
     it('id가 숫자가 아닐경우 400으로 응답한다.', done => {
       request(app).get('/users/foo').expect(400).end(done);
     });
-    it('없는 id로 요창하면 404를 응답한다.', done => {
+    it('없는 id로 요청하면 404를 응답한다.', done => {
       request(app).get('/users/80').expect(404).end(done);
     });
   });

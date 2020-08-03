@@ -1,4 +1,4 @@
-const { checkValidateTerm } = require('../utils/validate');
+const { checkValidateTermFormat } = require('../utils/validate');
 const Goal = (sequelize, DataTypes) => {
   return sequelize.define('Goal', {
     title: {
@@ -9,7 +9,7 @@ const Goal = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        validateTerm: checkValidateTerm,
+        validateTerm: checkValidateTermFormat,
       },
     },
     completed: {
