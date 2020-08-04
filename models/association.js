@@ -1,6 +1,6 @@
 module.exports = db => {
   db.User.hasMany(db.Goal);
-  db.Goal.belongsTo(db.User);
+  // db.Goal.belongsTo(db.User);
 
   db.User.belongsToMany(db.Item, { through: db.UserItem });
   db.Item.belongsToMany(db.User, { through: db.UserItem });

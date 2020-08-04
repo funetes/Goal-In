@@ -1,5 +1,6 @@
 const { Goal } = require('../../models');
-// const { validateTerm } = require('../../utils/validate');
+const { checkNullAndUndefined } = require('../../utils/checkNullAndUndefined');
+
 const index = async (req, res) => {
   const userId = parseInt('1', 10); //userId는 유저 인증후 미들웨어에서 올것임
   const { page = 1 } = req.query;
@@ -41,26 +42,20 @@ const create = async (req, res) => {
   // create goals
   // userId는 유저 인증후 미들웨어에서 올것임
   const userId = parseInt('1', 10); //userId는 유저 인증후 미들웨어에서 올것임
+
   const { title, term, completed, isExpire } = req.body;
-  // 좀 더 좋은 방법이 없을까?
-  if (
-    title === undefined ||
-    term === undefined ||
-    completed === undefined ||
-    isExpire === undefined ||
-    userId === undefined
-  ) {
+  const goal = {
+    title,
+    term,
+    completed,
+    isExpire,
+    UserId: userId,
+  };
+  if (!checkNullAndUndefined(goal)) {
     return res.status(400).end();
   }
   try {
-    const newGoal = await Goal.create({
-      title,
-      term,
-      completed,
-      isExpire,
-      UserId: userId,
-    });
-    // if (!created) return res.status(500).end();
+    const newGoal = await Goal.create(goal);
     res.json(newGoal);
   } catch (error) {
     if (error.errors[0].message === 'term validate error') {
@@ -92,6 +87,9 @@ const update = async (req, res) => {
     }
     res.json(goal);
   } catch (error) {
+    if (error.errors[0].message === 'term validate error') {
+      return res.status(400).end('term validate error');
+    }
     return res.status(500).end();
   }
 };

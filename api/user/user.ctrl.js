@@ -1,4 +1,5 @@
-const { User } = require('../../models');
+const { User, Item } = require('../../models');
+const { checkNullAndUndefined } = require('../../utils/checkNullAndUndefined');
 
 const index = async (req, res) => {
   req.query.limit = req.query.limit || 10;
@@ -68,6 +69,42 @@ const create = async (req, res) => {
   }
 };
 
+const purchaseItem = async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+  const itemId = parseInt(req.params.itemId, 10);
+  const ids = {
+    userId,
+    itemId,
+  };
+  // null check
+  if (isNaN(userId) || isNaN(itemId) || !checkNullAndUndefined(ids)) {
+    return res.status(400).end();
+  }
+
+  try {
+    const userP = User.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    // item 1번 검색
+    const itemP = Item.findOne({
+      where: {
+        id: itemId,
+      },
+    });
+    const [user, item] = await Promise.all([userP, itemP]);
+    if (user.credit < item.price) {
+      return res.status(400).end();
+    }
+    // 트랜젝션?
+    user.credit -= item.price;
+    await user.addItem(item);
+    await user.save();
+    res.status(200).end();
+  } catch (error) {}
+};
+
 const update = async (req, res) => {
   const id = parseInt(req.params.id);
   const { userName, motto } = req.body;
@@ -97,4 +134,5 @@ module.exports = {
   destroy,
   create,
   update,
+  purchaseItem,
 };

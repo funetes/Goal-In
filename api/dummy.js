@@ -3,6 +3,7 @@ const users = [
     userName: 'kim',
     email: 'kim23@gmail.com',
     passWord: 'kk98294829829',
+    credit: 1000,
   },
   {
     userName: 'park',
@@ -15,7 +16,7 @@ const items = [
     itemName: 'backgroundA',
     categori: 'background',
     image: 'null',
-    price: 1000,
+    price: 100,
     description: 'something beautiful background',
   },
   {

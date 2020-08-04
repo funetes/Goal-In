@@ -2,8 +2,8 @@ const app = require('../../app');
 const request = require('supertest');
 const should = require('should');
 const db = require('../../models');
-const { users } = require('../dummy');
-describe('GET /users', () => {
+const { users, items } = require('../dummy');
+describe('GET /', () => {
   describe('성공시', () => {
     before(() => db.sequelize.sync({ force: true }));
     before(() => db.User.bulkCreate(users));
@@ -37,7 +37,7 @@ describe('GET /users', () => {
   });
 });
 
-describe('GET /users/1', () => {
+describe('GET /:id', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.User.bulkCreate(users));
   describe('성공시', () => {
@@ -60,7 +60,7 @@ describe('GET /users/1', () => {
   });
 });
 
-describe('DELETE /users/1', () => {
+describe('DELETE /:id', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.User.bulkCreate(users));
   describe('성공시', () => {
@@ -75,7 +75,7 @@ describe('DELETE /users/1', () => {
   });
 });
 
-describe('POST /users', () => {
+describe('POST /', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.User.bulkCreate(users));
   describe('성공시', () => {
@@ -123,7 +123,24 @@ describe('POST /users', () => {
   });
 });
 
-describe('PUT /users/:id', () => {
+describe.only('POST /item/:id', () => {
+  before(() => db.sequelize.sync({ force: true }));
+  before(() => db.Item.bulkCreate(items));
+  before(() => db.User.bulkCreate(users));
+  describe('성공시', () => {
+    it('200을 응답한다.', done => {
+      request(app)
+        .post('/users/1/item/1')
+        .send({
+          Price: 100,
+        })
+        .expect(200)
+        .end(done);
+    });
+  });
+});
+
+describe('PUT /:id', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.User.bulkCreate(users));
   describe('성공시', () => {

@@ -5,7 +5,7 @@ const db = require('../../models');
 const { items } = require('../dummy');
 const { describe } = require('mocha');
 
-describe('GET /item', () => {
+describe('GET /', () => {
   describe('성공시', () => {
     before(() => db.sequelize.sync({ force: true }));
     before(() => db.Item.bulkCreate(items));
@@ -26,7 +26,7 @@ describe('GET /item', () => {
   });
 });
 
-describe('GET item/:id', () => {
+describe('GET /:id', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.Item.bulkCreate(items));
   describe('성공시', () => {
@@ -50,7 +50,7 @@ describe('GET item/:id', () => {
   });
 });
 
-describe('POST item/', () => {
+describe('POST /', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.Item.bulkCreate(items));
   describe('성공시', () => {
@@ -112,7 +112,7 @@ describe('POST item/', () => {
   });
 });
 
-describe('PUT item/:id', () => {
+describe('PUT /:id', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.Item.bulkCreate(items));
   describe('성공시', () => {

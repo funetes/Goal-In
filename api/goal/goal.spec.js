@@ -3,7 +3,6 @@ const request = require('supertest');
 const should = require('should');
 const db = require('../../models');
 const { users, goals } = require('../dummy');
-const { describe } = require('mocha');
 
 describe('GET /', () => {
   before(() => db.sequelize.sync({ force: true }));
@@ -162,6 +161,20 @@ describe('PUT /', () => {
           result.should.equal(1);
           done();
         });
+    });
+  });
+  describe('실패시', () => {
+    it('title, term 두개 모두 빈값이면 400을 응답한다.', done => {
+      request(app).put('/goals/2').send({}).expect(400).end(done);
+    });
+    it('term 날짜가 유효하지 않으면 400을 응답한다.', done => {
+      request(app)
+        .put('/goals/2')
+        .send({
+          term: '2020/08/30-2019/05/30',
+        })
+        .expect(400)
+        .end(done);
     });
   });
 });
