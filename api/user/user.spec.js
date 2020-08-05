@@ -123,24 +123,49 @@ describe('POST /', () => {
   });
 });
 
-describe.only('POST /item/:id', () => {
+describe('POST /item/:id', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.Item.bulkCreate(items));
   before(() => db.User.bulkCreate(users));
   describe('성공시', () => {
     it('200을 응답한다.', done => {
+      request(app).post('/users/1/item/1').expect(200).end(done);
+    });
+  });
+  describe('실패시', () => {
+    it('parameter가 숫자가 아니면 400을 응답한다', done => {
+      request(app).post('/users/foo/item/pow').expect(400).end(done);
+    });
+    it('존재하지 않는 userId, itemId를 요청하면 404를 응답한다.', done => {
+      request(app).post('/users/4000/item/1900').expect(404).end(done);
+    });
+    it('크레딧이 부족하면 구매하지 못한다. 400응답', done => {
+      request(app)
+        .post('/users/2/item/1')
+        .expect(400)
+        .end((err, res) => {
+          res.text.should.equal('not enough money');
+          done();
+        });
+    });
+    it('이미 구매한 아이템은 재구매 하지 못한다. 400응답, error message', done => {
+      db.UserItem.bulkCreate({
+        isApplied: false,
+        UserId: 1,
+        ItemId: 1,
+      });
       request(app)
         .post('/users/1/item/1')
-        .send({
-          Price: 100,
-        })
-        .expect(200)
-        .end(done);
+        .expect(400)
+        .end((err, res) => {
+          res.text.should.equal('already purchase');
+          done();
+        });
     });
   });
 });
 
-describe('PUT /:id', () => {
+describe.only('PUT /:id', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.User.bulkCreate(users));
   describe('성공시', () => {
@@ -162,9 +187,6 @@ describe('PUT /:id', () => {
         .send({ userName: 'la' })
         .expect(400)
         .end(done);
-    });
-    it('userName이 없을경우 400으로 응답한다.', done => {
-      request(app).put('/users/2').send({}).expect(400).end(done);
     });
     it('없는 유저일 경우 404로 응답한다.', done => {
       request(app)
