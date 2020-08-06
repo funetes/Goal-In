@@ -131,6 +131,34 @@ const purchaseItem = async (req, res) => {
   }
 };
 
+const applyItem = async (req, res) => {
+  const userId = parseInt('1', 10); // userId는 인증후 미들웨어에서 옴.
+  const itemId = parseInt(req.params.id, 10);
+  try {
+    if (isNaN(userId) || isNaN(itemId))
+      throw new Error('userid or itemid is not number');
+
+    const myItem = await UserItem.findOne({
+      where: {
+        UserId: userId,
+        ItemId: itemId,
+      },
+    });
+    if (!myItem) throw new Error('wrong access');
+    myItem.isApplied = !myItem.isApplied;
+    await myItem.save();
+    res.json(myItem);
+  } catch (error) {
+    switch (error.message) {
+      case 'wrong access':
+      case 'userid or itemid is not int':
+        return res.status(400).end(error.message);
+      default:
+        return res.status(500).end();
+    }
+  }
+};
+
 const update = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const { userName, motto } = req.body;
@@ -169,4 +197,5 @@ module.exports = {
   create,
   update,
   purchaseItem,
+  applyItem,
 };

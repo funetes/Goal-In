@@ -1,14 +1,20 @@
+const isValidateDate = date => {
+  if (
+    !/^(19[0-9][0-9]|20[0-9][0-9])\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[0-1])$/i.test(
+      date
+    )
+  ) {
+    return false;
+  }
+  return true;
+};
+
 const checkValidateTermFormat = function (term) {
   const terms = term.split('-');
   terms.forEach(date => {
-    if (
-      !/^(19[0-9][0-9]|20[0-9][0-9])\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[0-1])$/i.test(
-        date
-      )
-    ) {
-      throw new Error('term validate error');
-    }
+    if (isValidateDate(date)) throw new Error('term validate error');
   });
+
   const startDate = terms[0];
   const endDate = terms[1];
 
@@ -37,4 +43,8 @@ const checkValidateTermFormat = function (term) {
   }
 };
 
-module.exports = { checkValidateTermFormat };
+const checkValidationOfDate = date => {
+  if (isValidateDate(date)) throw new Error('term validate error');
+};
+
+module.exports = { checkValidateTermFormat, checkValidationOfDate };

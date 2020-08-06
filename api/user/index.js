@@ -12,6 +12,8 @@ router.post('/', ctrl.create);
 
 router.post('/:userId/item/:itemId', ctrl.purchaseItem);
 
+router.post('/myItem/:id', ctrl.applyItem);
+
 router.put('/:id', ctrl.update);
 
 module.exports = router;

@@ -148,12 +148,7 @@ describe('POST /item/:id', () => {
           done();
         });
     });
-    it('이미 구매한 아이템은 재구매 하지 못한다. 400응답, error message', done => {
-      db.UserItem.bulkCreate({
-        isApplied: false,
-        UserId: 1,
-        ItemId: 1,
-      });
+    it('이미 구매한 아이템은 재구매 하지 못한다. 400응답', done => {
       request(app)
         .post('/users/1/item/1')
         .expect(400)
@@ -165,7 +160,72 @@ describe('POST /item/:id', () => {
   });
 });
 
-describe.only('PUT /:id', () => {
+describe.only('POST /myitem/:id', () => {
+  before(() => db.sequelize.sync({ force: true }));
+  before(() => db.Item.bulkCreate(items));
+  before(() => db.User.bulkCreate(users));
+  describe('성공시', () => {
+    it('해당 아이템이 적용된다.', done => {
+      const userp = db.User.findOne({
+        where: {
+          id: 1,
+        },
+      });
+      const itemp = db.Item.findOne({
+        where: {
+          id: 1,
+        },
+      });
+      Promise.all([userp, itemp])
+        .then(([user, item]) => {
+          return user.addItem(item);
+        })
+        .then(_ => {
+          request(app)
+            .post('/users/myitem/1')
+            .end((err, res) => {
+              // 내가 가지고 있는 아이템의 isApplied 가 true가 된다.
+              res.body.should.have.property('ItemId', 1);
+              res.body.should.have.property('UserId', 1);
+              res.body.should.have.property('isApplied', true);
+              done();
+            });
+        });
+    });
+    it('한번더 요청하면 적용이 해제된다.', done => {
+      request(app)
+        .post('/users/myitem/1')
+        .end((err, res) => {
+          res.body.should.have.property('ItemId', 1);
+          res.body.should.have.property('UserId', 1);
+          res.body.should.have.property('isApplied', false);
+          done();
+        });
+    });
+  });
+  describe('실패시', () => {
+    it('내가 가지고 있지 않는 아이템을 적용할수 없다', done => {
+      request(app)
+        .post('/users/myitem/5')
+        .expect(400)
+        .end((err, res) => {
+          res.text.should.equal('wrong access');
+          done();
+        });
+    });
+    it('itemId,userId는 숫자로 오지 않으면 400을 응답한다.', done => {
+      request(app)
+        .post('/users/myitem/bar')
+        .expect(400)
+        .end((err, res) => {
+          res.text.should.equal('userid or itemid is not int');
+          done();
+        });
+    });
+  });
+});
+
+describe('PUT /:id', () => {
   before(() => db.sequelize.sync({ force: true }));
   before(() => db.User.bulkCreate(users));
   describe('성공시', () => {

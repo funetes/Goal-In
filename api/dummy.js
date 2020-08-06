@@ -113,5 +113,27 @@ const goals = [
     UserId: '1',
   },
 ];
-
-module.exports = { users, items, goals };
+const dailyGoal = [
+  {
+    retroRespact: '',
+    day: '2020/08/01',
+    description: '',
+    states: false,
+    GoalId: 3,
+  },
+  {
+    retroRespact: '',
+    day: '2020/08/02',
+    description: '',
+    states: false,
+    GoalId: 3,
+  },
+  {
+    retroRespact: '',
+    day: '2020/08/03',
+    description: '',
+    states: false,
+    GoalId: 3,
+  },
+];
+module.exports = { users, items, goals, dailyGoal };

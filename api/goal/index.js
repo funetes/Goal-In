@@ -1,6 +1,9 @@
 const express = require('express');
 const ctrl = require('./goal.ctrl');
 const router = express.Router();
+const dailyGoal = require('../dailyGoal/index');
+
+router.use('/:id/dailygoal', dailyGoal);
 
 router.get('/', ctrl.index);
 
